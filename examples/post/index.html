@@ -1,40 +1,116 @@
 <!doctype html>
-<html>
-  <head>
-    <title>axios - post example</title>
-    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
-  </head>
-  <body class="container">
-    <h1>axios.post</h1>
+<html lang="en">
 
-    <form role="form" class="form" onsubmit="return false;">
-      <div class="form-group">
-        <label for="data">JSON</label>
-        <textarea id="data" class="form-control" rows="5"></textarea>
-      </div>
-      <button id="post" type="button" class="btn btn-primary">POST</button>
-    </form>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axios - POST Example</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 50px;
+        }
 
-    <div id="output" class="container"></div>
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #007bff;
+        }
 
-    <script src="/axios.min.js"></script>
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+        }
+
+        #output {
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .output-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .output-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container form-container">
+        <h1>Axios POST Example</h1>
+
+        <form role="form" class="form">
+            <div class="form-group">
+                <label for="data">Enter JSON Data:</label>
+                <textarea id="data" class="form-control" rows="5" placeholder='{"key": "value"}'></textarea>
+            </div>
+            <button id="post" type="button" class="btn btn-primary" disabled>POST</button>
+        </form>
+
+        <div id="output"></div>
+    </div>
+
+    <footer>&copy; 2024 Your Company</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script>
-      (function () {
-        var output = document.getElementById('output');
-        document.getElementById('post').onclick = function () {
-          var data = document.getElementById('data').value;
+        (function () {
+            const postBtn = document.getElementById('post');
+            const output = document.getElementById('output');
+            const dataField = document.getElementById('data');
 
-          axios.post('/post/server', JSON.parse(data))
-            .then(function (res) {
-              output.className = 'container';
-              output.innerHTML = res.data;
-            })
-            .catch(function (err) {
-              output.className = 'container text-danger';
-              output.innerHTML = err.message;
+            dataField.addEventListener('input', function () {
+                postBtn.disabled = dataField.value.trim() === '';
             });
-        };
-      })();
+
+            postBtn.onclick = function () {
+                const data = dataField.value.trim();
+
+                try {
+                    const jsonData = JSON.parse(data);
+                    axios.post('/post/server', jsonData)
+                        .then(function (res) {
+                            output.className = 'output-success';
+                            output.innerHTML = JSON.stringify(res.data, null, 2);
+                        })
+                        .catch(function (err) {
+                            output.className = 'output-error';
+                            output.innerHTML = 'Error: ' + err.message;
+                        })
+                        .finally(function () {
+                            output.style.display = 'block';
+                        });
+                } catch (err) {
+                    output.className = 'output-error';
+                    output.innerHTML = 'Invalid JSON: ' + err.message;
+                    output.style.display = 'block';
+                }
+            };
+        })();
     </script>
-  </body>
+
+</body>
+
 </html>
